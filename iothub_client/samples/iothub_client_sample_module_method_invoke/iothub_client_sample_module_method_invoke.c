@@ -10,7 +10,7 @@
 const char* targetDevice = "edgeDevice1";
 const char* targetModule = "receiving-module";
 const char* targetMethodName = "test-method";
-const char* payload = "this-is-a-payload";
+const char* payload = "{}";
 
 
 int main()

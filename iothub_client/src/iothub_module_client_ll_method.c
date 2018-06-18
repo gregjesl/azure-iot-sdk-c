@@ -19,6 +19,8 @@
 
 #define  HTTP_HEADER_KEY_AUTHORIZATION  "Authorization"
 #define  HTTP_HEADER_VAL_AUTHORIZATION  " "
+#define  HTTP_HEADER_KEY_MODULE_ID  "x-ms-edge-moduleId"
+#define  HTTP_HEADER_VAL_MODULE_ID  " "
 #define  HTTP_HEADER_KEY_REQUEST_ID  "Request-Id"
 #define  HTTP_HEADER_KEY_USER_AGENT  "User-Agent"
 #define  HTTP_HEADER_VAL_USER_AGENT  CLIENT_DEVICE_TYPE_PREFIX CLIENT_DEVICE_BACKSLASH IOTHUB_SDK_VERSION
@@ -104,6 +106,12 @@ static HTTP_HEADERS_HANDLE createHttpHeader()
     else if (HTTPHeaders_AddHeaderNameValuePair(httpHeader, HTTP_HEADER_KEY_AUTHORIZATION, HTTP_HEADER_VAL_AUTHORIZATION) != HTTP_HEADERS_OK)
     {
         LogError("HTTPHeaders_AddHeaderNameValuePair failed for Authorization header");
+        HTTPHeaders_Free(httpHeader);
+        httpHeader = NULL;
+    }
+    else if (HTTPHeaders_AddHeaderNameValuePair(httpHeader, HTTP_HEADER_KEY_MODULE_ID, HTTP_HEADER_VAL_MODULE_ID) != HTTP_HEADERS_OK)
+    {
+        LogError("HTTPHeaders_AddHeaderNameValuePair failed for module ID header");
         HTTPHeaders_Free(httpHeader);
         httpHeader = NULL;
     }
@@ -251,6 +259,7 @@ static IOTHUB_CLIENT_RESULT sendHttpRequestMethod(IOTHUB_MODULE_CLIENT_METHOD_HA
     HTTP_HEADERS_HANDLE httpHeader;
     STRING_HANDLE relativePath;
     STRING_HANDLE scope;
+    STRING_HANDLE moduleHeader;
     char* sastoken;
     char* trustedCertificate;
     unsigned int statusCode = 0;
@@ -260,7 +269,7 @@ static IOTHUB_CLIENT_RESULT sendHttpRequestMethod(IOTHUB_MODULE_CLIENT_METHOD_HA
         LogError("HttpHeader creation failed");
         result = IOTHUB_CLIENT_ERROR;
     }
-    else if ((scope = STRING_construct_sprintf(SCOPE_FMT, moduleMethodHandle->hostname, moduleMethodHandle->deviceId, moduleMethodHandle->moduleId)) == NULL) //No URL Encode necessary - SCOPE_FMT already URL Encoded
+    else if ((scope = STRING_construct_sprintf(SCOPE_FMT, moduleMethodHandle->hostname, moduleMethodHandle->deviceId, moduleMethodHandle->moduleId)) == NULL)
     {
         LogError("Failed constructing scope");
         HTTPHeaders_Free(httpHeader);
@@ -281,12 +290,30 @@ static IOTHUB_CLIENT_RESULT sendHttpRequestMethod(IOTHUB_MODULE_CLIENT_METHOD_HA
         free(sastoken);
         result = IOTHUB_CLIENT_ERROR;
     }
+    else if ((moduleHeader = STRING_construct_sprintf("%s/%s", moduleMethodHandle->deviceId, moduleMethodHandle->moduleId)) == NULL)
+    {
+        LogError("Failure updating Http Headers");
+        HTTPHeaders_Free(httpHeader);
+        STRING_delete(scope);
+        free(sastoken);
+        result = IOTHUB_CLIENT_ERROR;
+    }
+    else if (HTTPHeaders_ReplaceHeaderNameValuePair(httpHeader, HTTP_HEADER_KEY_MODULE_ID, STRING_c_str(moduleHeader)) != HTTP_HEADERS_OK)
+    {
+        LogError("Failure updating Http Headers");
+        HTTPHeaders_Free(httpHeader);
+        STRING_delete(scope);
+        free(sastoken);
+        STRING_delete(moduleHeader);
+        result = IOTHUB_CLIENT_ERROR;
+    }
     else if ((relativePath = STRING_construct_sprintf(RELATIVE_PATH_FMT_METHOD, deviceId, moduleId, URL_API_VERSION)) == NULL)
     {
         LogError("Failure creating relative path");
         HTTPHeaders_Free(httpHeader);
         STRING_delete(scope);
         free(sastoken);
+        STRING_delete(moduleHeader);
         result = IOTHUB_CLIENT_ERROR;
     }
     else if ((httpExApiHandle = HTTPAPIEX_Create(moduleMethodHandle->hostname)) == NULL)
@@ -295,6 +322,7 @@ static IOTHUB_CLIENT_RESULT sendHttpRequestMethod(IOTHUB_MODULE_CLIENT_METHOD_HA
         HTTPHeaders_Free(httpHeader);
         STRING_delete(scope);
         free(sastoken);
+        STRING_delete(moduleHeader);
         STRING_delete(relativePath);
         result = IOTHUB_CLIENT_ERROR;
     }
@@ -304,6 +332,7 @@ static IOTHUB_CLIENT_RESULT sendHttpRequestMethod(IOTHUB_MODULE_CLIENT_METHOD_HA
         HTTPHeaders_Free(httpHeader);
         STRING_delete(scope);
         free(sastoken);
+        STRING_delete(moduleHeader);
         STRING_delete(relativePath);
         HTTPAPIEX_Destroy(httpExApiHandle);
         result = IOTHUB_CLIENT_ERROR;
@@ -336,6 +365,7 @@ static IOTHUB_CLIENT_RESULT sendHttpRequestMethod(IOTHUB_MODULE_CLIENT_METHOD_HA
         HTTPHeaders_Free(httpHeader);
         STRING_delete(scope);
         free(sastoken);
+        STRING_delete(moduleHeader);
         STRING_delete(relativePath);
         HTTPAPIEX_Destroy(httpExApiHandle);
         free(trustedCertificate);
