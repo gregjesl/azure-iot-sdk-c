@@ -20,7 +20,7 @@ static const char* const REGISTRATION_STATUS_JSON_VALUE_ASSIGNED = "assigned";
 static const char* const REGISTRATION_STATUS_JSON_VALUE_FAILED = "failed";
 static const char* const REGISTRATION_STATUS_JSON_VALUE_DISABLED = "disabled";
 
-static const char* const INDIVIDUAL_ENROLLMENT_JSON_KEY_CAPABILITIES = "capabilities"
+static const char* const INDIVIDUAL_ENROLLMENT_JSON_KEY_CAPABILITIES = "capabilities";
 static const char* const INDIVIDUAL_ENROLLMENT_JSON_KEY_REG_ID = "registrationId";
 static const char* const INDIVIDUAL_ENROLLMENT_JSON_KEY_DEVICE_ID = "deviceId";
 static const char* const INDIVIDUAL_ENROLLMENT_JSON_KEY_REG_STATE = "registrationState";

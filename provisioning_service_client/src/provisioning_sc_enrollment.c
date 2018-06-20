@@ -128,7 +128,7 @@ JSON_Value* individualEnrollment_toJson(const INDIVIDUAL_ENROLLMENT_HANDLE enrol
     }
 
     //Set data
-    else if (json_serialize_and_set_struct(root_object, INDIVIDUAL_ENROLLMENT_JSON_KEY_CAPABILITIES, enrollment->capabilities, (TO_JSON_FUNCTION)deviceCapabilities_toJson, REQUIRED) != 0)
+    else if (json_serialize_and_set_struct(root_object, INDIVIDUAL_ENROLLMENT_JSON_KEY_CAPABILITIES, enrollment->capabilities, (TO_JSON_FUNCTION)deviceCapabilities_toJson, OPTIONAL) != 0)
     {
         LogError("Failed to set '%s' in JSON string", INDIVIDUAL_ENROLLMENT_JSON_KEY_CAPABILITIES);
         json_value_free(root_value);
@@ -191,7 +191,7 @@ INDIVIDUAL_ENROLLMENT_HANDLE individualEnrollment_fromJson(JSON_Object* root_obj
     {
         memset(new_enrollment, 0, sizeof(INDIVIDUAL_ENROLLMENT));
 
-        if (json_deserialize_and_get_struct((void**)&(new_enrollment->capabilites), root_object, INDIVIDUAL_ENROLLMENT_JSON_KEY_CAPABILITIES, (FROM_JSON_FUNCTION)deviceCapabilities_fromJson, REQUIRED) != 0)
+        if (json_deserialize_and_get_struct((void**)&(new_enrollment->capabilities), root_object, INDIVIDUAL_ENROLLMENT_JSON_KEY_CAPABILITIES, (FROM_JSON_FUNCTION)deviceCapabilities_fromJson, OPTIONAL) != 0)
         {
             LogError("Failed to set '%s' in Individual Enrollment", INDIVIDUAL_ENROLLMENT_JSON_KEY_CAPABILITIES);
             individualEnrollment_destroy(new_enrollment);
@@ -698,6 +698,40 @@ DEVICE_REGISTRATION_STATE_HANDLE individualEnrollment_getDeviceRegistrationState
     else
     {
         result = enrollment->registration_state;
+    }
+
+    return result;
+}
+
+int individualEnrollment_setDeviceCapabilities(INDIVIDUAL_ENROLLMENT_HANDLE enrollment, DEVICE_CAPABILITIES_HANDLE capabilities)
+{
+    int result = 0;
+
+    if (enrollment == NULL)
+    {
+        LogError("enrollment handle is NULL");
+        result = __FAILURE__;
+    }
+    else
+    {
+        deviceCapabilities_destroy(enrollment->capabilities);
+        enrollment->capabilities = capabilities;
+    }
+
+    return result;
+}
+
+DEVICE_CAPABILITIES_HANDLE individualEnrollment_getDeviceCapabilities(INDIVIDUAL_ENROLLMENT_HANDLE enrollment)
+{
+    DEVICE_CAPABILITIES_HANDLE result = NULL;
+
+    if (enrollment == NULL)
+    {
+        LogError("enrollment is NULL");
+    }
+    else
+    {
+        result = enrollment->capabilities;
     }
 
     return result;

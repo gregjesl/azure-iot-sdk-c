@@ -13,6 +13,7 @@ extern "C" {
 #include "azure_c_shared_utility/umock_c_prod.h"
 #include "provisioning_sc_attestation_mechanism.h"
 #include "provisioning_sc_device_registration_state.h"
+#include "provisioning_sc_device_capabilities.h"
 #include "provisioning_sc_twin.h"
 #include "parson.h"
 
