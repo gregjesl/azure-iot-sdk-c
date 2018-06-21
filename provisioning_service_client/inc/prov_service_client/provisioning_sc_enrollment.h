@@ -90,6 +90,7 @@ MOCKABLE_FUNCTION(, int, individualEnrollment_setAttestationMechanism, INDIVIDUA
 MOCKABLE_FUNCTION(, INITIAL_TWIN_HANDLE, individualEnrollment_getInitialTwin, INDIVIDUAL_ENROLLMENT_HANDLE, enrollment);
 MOCKABLE_FUNCTION(, int, individualEnrollment_setInitialTwin, INDIVIDUAL_ENROLLMENT_HANDLE, enrollment, INITIAL_TWIN_HANDLE, twin);
 MOCKABLE_FUNCTION(, DEVICE_CAPABILITIES_HANDLE, individualEnrollment_getDeviceCapabilities, INDIVIDUAL_ENROLLMENT_HANDLE, enrollment);
+MOCKABLE_FUNCTION(, int, individualEnrollment_setDeviceCapabilities, INDIVIDUAL_ENROLLMENT_HANDLE, enrollment, DEVICE_CAPABILITIES_HANDLE, capabilities);
 MOCKABLE_FUNCTION(, DEVICE_REGISTRATION_STATE_HANDLE, individualEnrollment_getDeviceRegistrationState, INDIVIDUAL_ENROLLMENT_HANDLE, enrollment);
 MOCKABLE_FUNCTION(, const char*, individualEnrollment_getRegistrationId, INDIVIDUAL_ENROLLMENT_HANDLE, enrollment);
 MOCKABLE_FUNCTION(, const char*, individualEnrollment_getIotHubHostName, INDIVIDUAL_ENROLLMENT_HANDLE, enrollment);

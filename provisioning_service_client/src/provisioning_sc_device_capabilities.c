@@ -55,8 +55,19 @@ DEVICE_CAPABILITIES_HANDLE deviceCapabilities_fromJson(JSON_Object* root_object)
     }
     else
     {
+        int iotEdge;
         memset(new_capabilities, 0, sizeof(DEVICE_CAPABILITIES));
-        new_capabilities->iotEdge = (bool)json_object_get_boolean(root_object, DEVICE_CAPABILITIES_JSON_KEY_IOT_EDGE);
+
+        if ((iotEdge = json_object_get_boolean(root_object, DEVICE_CAPABILITIES_JSON_KEY_IOT_EDGE)) == -1)
+        {
+            LogError("Failure to retrieve key %s", DEVICE_CAPABILITIES_JSON_KEY_IOT_EDGE);
+            deviceCapabilities_destroy(new_capabilities);
+            new_capabilities = NULL;
+        }
+        else
+        {
+            new_capabilities->iotEdge = (bool)iotEdge;
+        }
     }
 
     return new_capabilities;
@@ -95,7 +106,7 @@ JSON_Value* deviceCapabilities_toJson(const DEVICE_CAPABILITIES_HANDLE capabilit
 }
 
 /* Acessor Functions */
-bool deviceCapabilities_getIotEdge(DEVICE_CAPABILITIES_HANDLE capabilities)
+bool deviceCapabilities_isIotEdgeCapable(DEVICE_CAPABILITIES_HANDLE capabilities)
 {
     bool result;
 
@@ -113,11 +124,11 @@ bool deviceCapabilities_getIotEdge(DEVICE_CAPABILITIES_HANDLE capabilities)
     return result;
 }
 
-void deviceCapabilities_setIotEdge(DEVICE_CAPABILITIES_HANDLE capabilities, bool iotEdge)
+void deviceCapabilities_setIotEdgeCapable(DEVICE_CAPABILITIES_HANDLE capabilities, bool iotEdgeCapable)
 {
     if (capabilities != NULL)
     {
-        capabilities->iotEdge = iotEdge;
+        capabilities->iotEdge = iotEdgeCapable;
     }
 }
 
