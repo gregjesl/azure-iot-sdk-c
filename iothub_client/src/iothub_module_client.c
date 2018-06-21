@@ -93,4 +93,17 @@ IOTHUB_CLIENT_RESULT IoTHubModuleClient_SetInputMessageCallback(IOTHUB_MODULE_CL
     return IoTHubClientCore_SetInputMessageCallback((IOTHUB_CLIENT_CORE_HANDLE)iotHubModuleClientHandle, inputName, eventHandlerCallback, userContextCallback);
 }
 
+#ifdef USE_EDGE_MODULES
+
+IOTHUB_CLIENT_RESULT IoTHubModuleClient_DeviceMethodInvoke(IOTHUB_MODULE_CLIENT_HANDLE iotHubModuleClientHandle, const char* deviceId, const char* methodName, const char* methodPayload, unsigned int timeout, int* responseStatus, unsigned char** responsePayload, size_t* responsePayloadSize)
+{
+
+}
+
+IOTHUB_CLIENT_RESULT IoTHubModuleClient_ModuleMethodInvoke(IOTHUB_MODULE_CLIENT_HANDLE iotHubModuleClientHandle, const char* deviceId, const char* moduleId, const char* methodName, const char* methodPayload, unsigned int timeout, int* responseStatus, unsigned char** responsePayload, size_t* responsePayloadSize)
+{
+
+}
+
+#endif /*USE_EDGE_MODULES*/
 

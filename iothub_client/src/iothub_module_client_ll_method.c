@@ -31,8 +31,9 @@
 #define SASTOKEN_LIFETIME 3600
 
 static const char* const URL_API_VERSION = "?api-version=2017-11-08-preview";
-static const char* const RELATIVE_PATH_FMT_METHOD = "/twins/%s/modules/%s/methods%s";
-static const char* const RELATIVE_PATH_FMT_METHOD_PAYLOAD = "{\"methodName\":\"%s\",\"timeout\":%d,\"payload\":%s}";
+static const char* const RELATIVE_PATH_FMT_MODULE_METHOD = "/twins/%s/modules/%s/methods%s";
+static const char* const RELATIVE_PATH_FMT_DEVICE_METHOD = "/twins/%s/methods%s";
+static const char* const PAYLOAD_FMT = "{\"methodName\":\"%s\",\"timeout\":%d,\"payload\":%s}";
 static const char* const SCOPE_FMT = "%s/devices/%s/modules/%s";
 
 typedef struct IOTHUB_MODULE_CLIENT_METHOD_HANDLE_DATA_TAG
@@ -232,7 +233,7 @@ static BUFFER_HANDLE createMethodPayloadJson(const char* methodName, unsigned in
     const char* stringHandle_c_str;
     BUFFER_HANDLE result;
 
-    if ((stringHandle = STRING_construct_sprintf(RELATIVE_PATH_FMT_METHOD_PAYLOAD, methodName, timeout, payload)) == NULL)
+    if ((stringHandle = STRING_construct_sprintf(PAYLOAD_FMT, methodName, timeout, payload)) == NULL)
     {
         LogError("STRING_construct_sprintf failed");
         result = NULL;
@@ -248,6 +249,22 @@ static BUFFER_HANDLE createMethodPayloadJson(const char* methodName, unsigned in
         result = BUFFER_create((const unsigned char*)stringHandle_c_str, strlen(stringHandle_c_str));
         STRING_delete(stringHandle);
     }
+    return result;
+}
+
+static STRING_HANDLE createRelativePath(const char* deviceId, const char* moduleId)
+{
+    STRING_HANDLE result;
+
+    if (moduleId != NULL)
+    {
+        result = STRING_construct_sprintf(RELATIVE_PATH_FMT_MODULE_METHOD, deviceId, moduleId, URL_API_VERSION);
+    }
+    else
+    {
+        result = STRING_construct_sprintf(RELATIVE_PATH_FMT_DEVICE_METHOD, deviceId, URL_API_VERSION);
+    }
+
     return result;
 }
 
@@ -307,7 +324,7 @@ static IOTHUB_CLIENT_RESULT sendHttpRequestMethod(IOTHUB_MODULE_CLIENT_METHOD_HA
         STRING_delete(moduleHeader);
         result = IOTHUB_CLIENT_ERROR;
     }
-    else if ((relativePath = STRING_construct_sprintf(RELATIVE_PATH_FMT_METHOD, deviceId, moduleId, URL_API_VERSION)) == NULL)
+    else if ((relativePath = createRelativePath(deviceId, moduleId)) == NULL)
     {
         LogError("Failure creating relative path");
         HTTPHeaders_Free(httpHeader);
@@ -374,7 +391,7 @@ static IOTHUB_CLIENT_RESULT sendHttpRequestMethod(IOTHUB_MODULE_CLIENT_METHOD_HA
     return result;
 }
 
-IOTHUB_CLIENT_RESULT IoTHubModuleClient_LL_MethodInvoke_Impl(IOTHUB_MODULE_CLIENT_METHOD_HANDLE moduleMethodHandle, const char* deviceId, const char* moduleId, const char* methodName, const char* methodPayload, unsigned int timeout, int* responseStatus, unsigned char** responsePayload, size_t* responsePayloadSize)
+IOTHUB_CLIENT_RESULT IoTHubModuleClient_LL_GenericMethodInvoke(IOTHUB_MODULE_CLIENT_METHOD_HANDLE moduleMethodHandle, const char* deviceId, const char* moduleId, const char* methodName, const char* methodPayload, unsigned int timeout, int* responseStatus, unsigned char** responsePayload, size_t* responsePayloadSize)
 {
     IOTHUB_CLIENT_RESULT result;
 

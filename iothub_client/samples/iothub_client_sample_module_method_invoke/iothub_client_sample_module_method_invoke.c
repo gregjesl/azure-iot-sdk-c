@@ -20,6 +20,6 @@ int main()
     size_t responsePayloadSize;
 
     IOTHUB_MODULE_CLIENT_LL_HANDLE handle = IoTHubModuleClient_LL_CreateFromEnvironment(MQTT_Protocol);
-    IoTHubModuleClient_LL_MethodInvoke(handle, targetDevice, targetModule, targetMethodName, payload, 60, &response, &responsePayload, &responsePayloadSize);
+    IoTHubModuleClient_LL_ModuleMethodInvoke(handle, targetDevice, targetModule, targetMethodName, payload, 60, &response, &responsePayload, &responsePayloadSize);
 
 }

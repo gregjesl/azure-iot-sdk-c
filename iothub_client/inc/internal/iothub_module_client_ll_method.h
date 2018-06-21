@@ -19,7 +19,7 @@ extern "C"
     MOCKABLE_FUNCTION(, IOTHUB_MODULE_CLIENT_METHOD_HANDLE, IoTHubModuleClient_LL_MethodHandle_Create, const IOTHUB_CLIENT_CONFIG*, config, IOTHUB_AUTHORIZATION_HANDLE, authorizationHandle, const char*, module_id);
     MOCKABLE_FUNCTION(, void, IoTHubModuleClient_LL_MethodHandle_Destroy, IOTHUB_MODULE_CLIENT_METHOD_HANDLE, methodHandle);
 
-    MOCKABLE_FUNCTION(, IOTHUB_CLIENT_RESULT, IoTHubModuleClient_LL_MethodInvoke_Impl, IOTHUB_MODULE_CLIENT_METHOD_HANDLE, moduleMethodHandle, const char*, deviceId, const char*, moduleId, const char*, methodName, const char*, methodPayload, unsigned int, timeout, int*, responseStatus, unsigned char**, responsePayload, size_t*, responsePayloadSize);
+    MOCKABLE_FUNCTION(, IOTHUB_CLIENT_RESULT, IoTHubModuleClient_LL_GenericMethodInvoke, IOTHUB_MODULE_CLIENT_METHOD_HANDLE, moduleMethodHandle, const char*, deviceId, const char*, moduleId, const char*, methodName, const char*, methodPayload, unsigned int, timeout, int*, responseStatus, unsigned char**, responsePayload, size_t*, responsePayloadSize);
 
 #ifdef __cplusplus
 }
