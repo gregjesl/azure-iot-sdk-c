@@ -3280,7 +3280,7 @@ AGENT_DATA_TYPES_RESULT CreateAgentDataType_From_String(const char* source, AGEN
             {
                 int32_t int32Value;
                 unsigned char isNegative;
-                uint32_t uint32Value;
+				uint32_t uint32Value = 0;
                 const char* pos;
                 size_t strLength;
 
