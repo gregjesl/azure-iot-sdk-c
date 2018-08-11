@@ -189,6 +189,9 @@ endif()
 
 include("configs/azure_iot_sdksFunctions.cmake")
 
+# Compile the C++ wrapper
+add_subdirectory(cpp_wrapper)
+
 if (${run_unittests} OR ${run_e2e_tests} OR ${run_sfc_tests})
     include("dependencies-test.cmake")
 endif()
