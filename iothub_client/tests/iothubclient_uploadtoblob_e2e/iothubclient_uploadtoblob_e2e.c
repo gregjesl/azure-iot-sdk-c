@@ -47,7 +47,7 @@ static int uploadBlobNumber;
 
 static LOCK_HANDLE updateBlobTestLock;
 
-#define IOTHUB_UPLOADTOBLOB_TIMEOUT_SEC 30
+#define IOTHUB_UPLOADTOBLOB_TIMEOUT_SEC 120
 #define TEST_MAX_SIMULTANEOUS_UPLOADS 5
 
 
@@ -204,7 +204,7 @@ void e2e_uploadtoblob_test(IOTHUB_CLIENT_TRANSPORT_PROVIDER protocol, IOTHUB_ACC
         deviceToUse = IoTHubAccount_GetSASDevice(g_iothubAcctInfo);
     }
     ASSERT_IS_NOT_NULL(deviceToUse);
-    
+
     IOTHUB_CLIENT_HANDLE iotHubClientHandle = IoTHubClient_CreateFromConnectionString(deviceToUse->connectionString, protocol);
     ASSERT_IS_NOT_NULL_WITH_MSG(iotHubClientHandle, "Could not invoke IoTHubClient_CreateFromConnectionString");
 
@@ -299,7 +299,7 @@ IOTHUB_CLIENT_FILE_UPLOAD_GET_DATA_RESULT uploadToBlobGetDataEx(IOTHUB_CLIENT_FI
         callbackResult = IOTHUB_CLIENT_FILE_UPLOAD_GET_DATA_OK;
     }
     uploadBlobNumber++;
-    
+
     (void)Unlock(updateBlobTestLock);
     return callbackResult;
 }
@@ -315,7 +315,7 @@ void e2e_uploadtoblob_multiblock_test(IOTHUB_CLIENT_TRANSPORT_PROVIDER protocol,
     IOTHUB_CLIENT_RESULT result;
     IOTHUB_PROVISIONED_DEVICE* deviceToUse = IoTHubAccount_GetSASDevice(g_iothubAcctInfo);
     ASSERT_IS_NOT_NULL(deviceToUse);
-    
+
     IOTHUB_CLIENT_HANDLE iotHubClientHandle = IoTHubClient_CreateFromConnectionString(deviceToUse->connectionString, protocol);
     ASSERT_IS_NOT_NULL_WITH_MSG(iotHubClientHandle, "Could not invoke IoTHubClient_CreateFromConnectionString");
 
@@ -343,7 +343,7 @@ void e2e_uploadtoblob_test_multiple_simultaneous_uploads(IOTHUB_CLIENT_TRANSPORT
     IOTHUB_CLIENT_RESULT result;
     IOTHUB_PROVISIONED_DEVICE* deviceToUse = IoTHubAccount_GetSASDevice(g_iothubAcctInfo);
     ASSERT_IS_NOT_NULL(deviceToUse);
-    
+
     IOTHUB_CLIENT_HANDLE iotHubClientHandle = IoTHubClient_CreateFromConnectionString(deviceToUse->connectionString, protocol);
     ASSERT_IS_NOT_NULL_WITH_MSG(iotHubClientHandle, "Could not invoke IoTHubClient_CreateFromConnectionString");
 
@@ -364,7 +364,7 @@ void e2e_uploadtoblob_test_multiple_simultaneous_uploads(IOTHUB_CLIENT_TRANSPORT
     // Poll for completion, looping one at a time.
     for (int i = 0; i < TEST_MAX_SIMULTANEOUS_UPLOADS; i++)
     {
-        printf("waiting for context for context(%p), file(%s)\n", &uploadToBlobStatus[i], uploadFileNameList[i]);
+        LogInfo("waiting for context for context(%p), file(%s)\n", &uploadToBlobStatus[i], uploadFileNameList[i]);
         poll_for_upload_completion(&uploadToBlobStatus[i]);
         check_upload_result(uploadToBlobStatus[i]);
     }
@@ -393,8 +393,7 @@ TEST_SUITE_CLEANUP(TestClassCleanup)
 #ifdef TEST_MQTT
 TEST_FUNCTION(IoTHub_MQTT_UploadToBlob_multithreaded)
 {
-    //Currently not working
-    //e2e_uploadtoblob_test_multiple_simultaneous_uploads(MQTT_Protocol);
+    e2e_uploadtoblob_test_multiple_simultaneous_uploads(MQTT_Protocol);
 }
 
 TEST_FUNCTION(IoTHub_MQTT_UploadToBlob_sas)
